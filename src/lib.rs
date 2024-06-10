@@ -1,7 +1,7 @@
 use rand::Rng;
 use std::ops::Neg;
+use std::time::Instant;
 
-#[derive(Debug)]
 pub struct Layer {
     weights: Vec<Vec<f64>>,
     biases: Vec<f64>,
@@ -14,13 +14,13 @@ impl Layer {
     pub fn new(input_size: usize, output_size: usize) -> Layer {
         let mut rng = rand::thread_rng();
         let weights = (0..output_size)
-        .map(|_| (0..input_size).map(|_| rng.gen_range(-1.0..1.0)).collect())
-        .collect();
-    let weight_grad = vec![vec![0.0; input_size]; output_size];
-    let biases = vec![0.0; output_size];
-    let bias_grad = vec![0.0; output_size];
-    println!("intialized Weights: {:?}", weights);
-    Layer {
+            .map(|_| (0..input_size).map(|_| rng.gen_range(-1.0..1.0)).collect())
+            .collect();
+        let weight_grad = vec![vec![0.0; input_size]; output_size];
+        let biases = vec![0.0; output_size];
+        let bias_grad = vec![0.0; output_size];
+        // println!("intialized Weights: {:?}", weights);
+        Layer {
             weights,
             weight_grad,
             biases,
@@ -47,7 +47,12 @@ impl Layer {
     }
 
     // backward needs to return the error for this layer
-    fn backward(&mut self, input: &Vec<f64>, pre_activations: &Vec<f64>, output_grad: &Vec<f64>) -> Vec<f64> {
+    fn backward(
+        &mut self,
+        input: &Vec<f64>,
+        pre_activations: &Vec<f64>,
+        output_grad: &Vec<f64>,
+    ) -> Vec<f64> {
         let input_size = input.len();
         let output_size = self.biases.len();
         let mut input_grad = vec![0.0; input_size];
@@ -76,10 +81,10 @@ impl Layer {
         for i in 0..self.weights.len() {
             for j in 0..self.weights[i].len() {
                 self.weights[i][j] -= self.weight_grad[i][j] * learning_rate;
-                self.weight_grad[i][j] = 0.0;  // Reset gradient after update
+                self.weight_grad[i][j] = 0.0; // Reset gradient after update
             }
             self.biases[i] -= self.bias_grad[i] * learning_rate;
-            self.bias_grad[i] = 0.0;  // Reset gradient after update
+            self.bias_grad[i] = 0.0; // Reset gradient after update
         }
     }
 }
@@ -98,7 +103,9 @@ impl NN {
     }
 
     pub fn train(&mut self, data: &[(Vec<f64>, Vec<f64>)], epochs: usize, learning_rate: f64) {
-        for _ in 0..epochs {
+        for i in 0..epochs {
+            let now = Instant::now();
+            println!["Epoch {} begin", i+1];
             for (input, target) in data {
                 // Implement forward pass, loss calculation, backpropagation, and weight updates
                 let mut pre_activations_list = Vec::new();
@@ -126,6 +133,7 @@ impl NN {
                     layer.update_weights(learning_rate);
                 }
             }
+            println!["Epoch {} complete, took {:?}", i+1, now.elapsed()];
         }
     }
 
