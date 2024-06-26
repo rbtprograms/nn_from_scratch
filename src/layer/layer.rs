@@ -3,7 +3,6 @@ use rand::Rng;
 pub struct Layer {
     weights: Vec<Vec<f64>>,
     biases: Vec<f64>,
-    // NOTE: add grad part later in article
     weight_grad: Vec<Vec<f64>>,
     bias_grad: Vec<f64>,
 }
@@ -17,7 +16,7 @@ impl Layer {
         let weight_grad = vec![vec![0.0; input_size]; output_size];
         let biases = vec![0.0; output_size];
         let bias_grad = vec![0.0; output_size];
-        // println!("intialized Weights: {:?}", weights);
+
         Layer {
             weights,
             weight_grad,
@@ -77,10 +76,10 @@ impl Layer {
         for i in 0..self.weights.len() {
             for j in 0..self.weights[i].len() {
                 self.weights[i][j] -= self.weight_grad[i][j] * learning_rate;
-                self.weight_grad[i][j] = 0.0; // Reset gradient after update
+                self.weight_grad[i][j] = 0.0;
             }
             self.biases[i] -= self.bias_grad[i] * learning_rate;
-            self.bias_grad[i] = 0.0; // Reset gradient after update
+            self.bias_grad[i] = 0.0;
         }
     }
 }
