@@ -1,7 +1,6 @@
-
+use crate::layer::Layer;
 use std::ops::Neg;
 use std::time::Instant;
-use crate::layer::Layer;
 
 pub struct NN {
     pub layers: Vec<Layer>,
@@ -49,7 +48,12 @@ impl NN {
                     layer.update_weights(learning_rate);
                 }
             }
-            println!["Epoch {} complete, took {:?}, Loss: {}", i + 1, now.elapsed(), epoch_loss / data.len() as f64];
+            println![
+                "Epoch {} complete, took {:?}, Loss: {}",
+                i + 1,
+                now.elapsed(),
+                epoch_loss / data.len() as f64
+            ];
         }
     }
 
@@ -63,7 +67,6 @@ impl NN {
         activation
     }
 }
-
 
 pub fn cross_entropy_loss(y_true: &Vec<f64>, y_hat: &Vec<f64>) -> f64 {
     y_true
